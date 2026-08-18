@@ -1,0 +1,12 @@
+/* print.css — clean print output */
+@media print {
+  body { background: #fff !important; color: #111 !important; }
+  body::before { display: none; }
+  .topbar { position: static; }
+  .topbar nav { display: none; }
+  .container { max-width: none; padding: 12px; }
+  .panel, .metric, .chart-figure { box-shadow: none; break-inside: avoid; border-color: #ccc; background: #fff; }
+  .metric strong { color: #111; }
+  .da-tooltip { display: none; }
+  footer { color: #666; }
+}

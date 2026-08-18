@@ -3,9 +3,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
-import os
 import sys
-import tempfile
 from pathlib import Path
 
 from packaging.version import Version
@@ -16,11 +14,16 @@ REQUIRED = {
     "pandas": "CSV/Excel parsing and tabular analysis",
     "numpy": "numeric calculations",
     "openpyxl": "XLSX/XLSM reading",
-    "matplotlib": "offline chart rendering",
     "jinja2": "HTML template rendering",
-    "networkx": "correlation network layout",
     "charset_normalizer": "CSV encoding detection",
     "packaging": "version comparison",
+}
+
+# V2 charts are rendered client-side (vanilla JS/SVG); matplotlib and networkx
+# are therefore optional and only reported for information.
+OPTIONAL = {
+    "matplotlib": "optional: previously used for static charts",
+    "networkx": "optional: previously used for static network layouts",
 }
 
 
@@ -29,35 +32,25 @@ def check_environment(output_dir: str | Path | None = None) -> dict:
     result = {
         "python": {"executable": sys.executable, "version": sys.version.split()[0], "ok": True},
         "packages": [],
-        "matplotlib_agg": False,
+        "optional_packages": [],
         "output_writable": None,
         "requirements_file": str(SKILL_ROOT / "assets" / "requirements.txt"),
     }
     if Version(result["python"]["version"]) < Version(cfg["python_min_version"]):
         result["python"]["ok"] = False
 
-    for module_name, purpose in REQUIRED.items():
+    def _probe(module_name: str, purpose: str) -> dict:
         try:
             mod = importlib.import_module(module_name)
             version = getattr(mod, "__version__", "unknown")
-            result["packages"].append({"name": module_name, "installed": True, "version": version, "purpose": purpose})
+            return {"name": module_name, "installed": True, "version": version, "purpose": purpose}
         except Exception as exc:
-            result["packages"].append({"name": module_name, "installed": False, "version": None, "purpose": purpose, "error": str(exc)})
+            return {"name": module_name, "installed": False, "version": None, "purpose": purpose, "error": str(exc)}
 
-    try:
-        import matplotlib
-        matplotlib.use("Agg", force=True)
-        import matplotlib.pyplot as plt
-        fig = plt.figure()
-        plt.plot([0, 1], [0, 1])
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-            tmp_path = tmp.name
-        fig.savefig(tmp_path)
-        plt.close(fig)
-        os.unlink(tmp_path)
-        result["matplotlib_agg"] = True
-    except Exception as exc:
-        result["matplotlib_error"] = str(exc)
+    for module_name, purpose in REQUIRED.items():
+        result["packages"].append(_probe(module_name, purpose))
+    for module_name, purpose in OPTIONAL.items():
+        result["optional_packages"].append(_probe(module_name, purpose))
 
     if output_dir:
         try:
@@ -72,7 +65,7 @@ def check_environment(output_dir: str | Path | None = None) -> dict:
             result["output_error"] = str(exc)
 
     result["missing_required"] = [p["name"] for p in result["packages"] if not p["installed"]]
-    result["ok"] = result["python"]["ok"] and not result["missing_required"] and result["matplotlib_agg"] and result["output_writable"] is not False
+    result["ok"] = result["python"]["ok"] and not result["missing_required"] and result["output_writable"] is not False
     return result
 
 

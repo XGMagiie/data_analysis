@@ -1,5 +1,36 @@
-{% extends "base.html" %}{% block title %}Distributions{% endblock %}{% block content %}
-<h1>Distributions</h1><p class="muted">Automatic charts are bounded by the configured feature and sample limits.</p>
-<section class="panel"><h2>Charts</h2>{% if analysis.visualizations.univariate %}<div class="chart-grid">{% for chart in analysis.visualizations.univariate %}<figure><img loading="lazy" src="../{{ chart.path }}" alt="{{ chart.kind }} for {{ chart.columns|join(', ') }}"><figcaption><strong>{{ chart.kind }}</strong> · {{ chart.columns|join(', ') }}{% if chart.sampled %}<br>Sampled {{ chart.plotted_count }} of {{ chart.original_count }} records.{% endif %}</figcaption></figure>{% endfor %}</div>{% else %}<p class="empty">No automatic univariate charts were applicable.</p>{% endif %}</section>
-<section class="panel"><h2>Field statistics</h2><div class="table-wrap"><table><thead><tr><th>Column</th><th>Type</th><th>Key statistics</th></tr></thead><tbody>{% for c in analysis.profile.columns %}<tr><td>{{ c.name }}</td><td>{{ c.semantic_type }}</td><td>{% if c.semantic_type == 'numeric' %}mean {{ c.statistics.mean|num }}, median {{ c.statistics.median|num }}, std {{ c.statistics.std|num }}, IQR outliers {{ c.statistics.potential_outlier_count_iqr }}{% elif c.semantic_type == 'datetime' %}{{ c.statistics.earliest or '—' }} → {{ c.statistics.latest or '—' }}{% else %}unique {{ c.statistics.unique_count }}, top {{ c.statistics.top_value or '—' }}{% endif %}</td></tr>{% endfor %}</tbody></table></div></section>
+{% extends "base.html" %}
+{% block title %}Distributions{% endblock %}
+{% block content %}
+<h1 data-i18n="dist.title">Distributions</h1>
+<p class="muted panel-note" data-i18n="dist.note">Numeric-feature analysis. Choose a feature, tick the chart types you want, and explore with hover. <a href="overview.html" data-i18n="dist.changeType">Change types in Overview</a>.</p>
+
+<section class="panel reveal">
+  <h2>{{ icon('slider') }} <span data-i18n="dist.select">Feature to analyze</span></h2>
+  <div class="select-row">
+    <div class="select-wrap"><select id="dist-feature" aria-label="Feature"></select></div>
+    <span class="chart-type-toggles" id="dist-toggles">
+      <label class="ct"><input type="checkbox" value="line" checked><span data-i18n="chart.line">line</span></label>
+      <label class="ct"><input type="checkbox" value="density" checked><span data-i18n="chart.density">KDE</span></label>
+      <label class="ct"><input type="checkbox" value="box" checked><span data-i18n="dist.box">box</span></label>
+    </span>
+    <span class="picker-note" id="dist-note"></span>
+  </div>
+</section>
+
+<section class="panel reveal">
+  <h2>{{ icon('chart') }} <span data-i18n="dist.charts">Charts</span></h2>
+  <div class="chart-grid" id="dist-charts"></div>
+</section>
+
+<section class="panel reveal">
+  <h2>{{ icon('table') }} <span data-i18n="dist.stats">Field statistics</span></h2>
+  <div id="stat-table" class="table-wrap"></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="../js/charts/histogram.js" defer></script>
+<script src="../js/charts/density.js" defer></script>
+<script src="../js/charts/boxplot.js" defer></script>
+<script src="../js/charts/line.js" defer></script>
+<script src="../js/pages/distributions.js" defer></script>
 {% endblock %}

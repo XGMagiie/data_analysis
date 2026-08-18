@@ -1,4 +1,48 @@
-{% extends "base.html" %}{% block title %}Relationships{% endblock %}{% block content %}
-<h1>Pairwise Relationships</h1><p class="muted">Only pairs explicitly requested for this run are shown.</p>
-<section class="panel">{% if analysis.visualizations.relationships %}<div class="chart-grid">{% for chart in analysis.visualizations.relationships %}{% if chart.path %}<figure><img loading="lazy" src="../{{ chart.path }}" alt="{{ chart.kind }}"><figcaption><strong>{{ chart.kind }}</strong> · {{ chart.columns|join(' × ') }}{% if chart.sampled %}<br>Sampled {{ chart.plotted_count }} of {{ chart.original_count }} records.{% endif %}</figcaption></figure>{% else %}<div class="empty"><strong>{{ chart.columns|join(' × ') }}</strong>: {{ chart.reason }}</div>{% endif %}{% endfor %}</div>{% else %}<p class="empty">No pairwise charts were requested. Re-run analysis with one or more <code>--pair</code> options.</p>{% endif %}</section>
+{% extends "base.html" %}
+{% block title %}Relationships{% endblock %}
+{% block content %}
+<h1 data-i18n="rel.title">Pairwise Relationships</h1>
+<p class="muted panel-note" data-i18n="rel.note">Feature-pair analysis is enabled by default. Choose any two columns — the chart adapts to their semantic types and re-renders instantly.</p>
+
+<section class="panel reveal">
+  <h2>{{ icon('net') }} <span data-i18n="rel.explorer">Feature explorer</span></h2>
+  <div class="select-row">
+    <div class="select-wrap"><select id="pair-a" aria-label="Feature A"></select></div>
+    <span class="arrow-sep">{{ icon('arrow') }}</span>
+    <div class="select-wrap"><select id="pair-b" aria-label="Feature B"></select></div>
+    <label class="ct" id="color-label" style="display:none">
+      <input type="checkbox" id="pair-color-enable">
+      <span data-i18n="rel.colorBy">color by</span>
+    </label>
+    <div class="select-wrap" id="color-wrap" style="display:none"><select id="pair-color" aria-label="Color by category"></select></div>
+  </div>
+  <div class="metric-grid" id="pair-stats" style="margin-top:18px"></div>
+  <div id="pair-chart" class="chart-body" style="margin-top:6px"></div>
+</section>
+
+<section class="panel reveal">
+  <h2>{{ icon('info') }} <span data-i18n="rel.guide">Pair chart guide</span></h2>
+  <ul class="guide-list">
+    <li data-i18n="rel.guide1"><b>numeric × numeric</b> — scatter plot with live Pearson / Spearman coefficients. Check <i>color by</i> to shade points by a category column.</li>
+    <li data-i18n="rel.guide2"><b>numeric × categorical</b> — grouped box plots; with <i>color by</i>, one grouped box plot split by the color category.</li>
+    <li data-i18n="rel.guide3"><b>categorical × categorical</b> — cross-frequency heatmap; with <i>color by</i>, one stacked bar chart.</li>
+    <li data-i18n="rel.guide4"><b>datetime × numeric</b> — time series line.</li>
+  </ul>
+</section>
+
+{% if commentary.correlation %}
+<section class="panel reveal">
+  <h2>{{ icon('eye') }} <span data-i18n="rel.ai">AI commentary</span></h2>
+  <div class="finding-list">
+    {% for item in commentary.correlation %}<div class="finding">{{ badge(item.level, item.level) }}<p>{{ item.text }}</p></div>{% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script src="../js/charts/scatter.js" defer></script>
+<script src="../js/charts/boxplot.js" defer></script>
+<script src="../js/charts/heatmap.js" defer></script>
+<script src="../js/charts/grouped.js" defer></script>
+<script src="../js/pages/relationships.js" defer></script>
 {% endblock %}

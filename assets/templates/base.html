@@ -1,30 +1,62 @@
 {% set is_root = page_path == 'index.html' %}
 {% set prefix = '' if is_root else '../' %}
+{% macro icon(name) -%}
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{% if name == 'rows' %}<path d="M4 7h16M4 12h16M4 17h16"/>{% elif name == 'cols' %}<path d="M7 4v16M12 4v16M17 4v16"/>{% elif name == 'missing' %}<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/><path d="M4 13h7v7" opacity=".35"/><path d="M13 4h7v7" opacity=".35"/>{% elif name == 'dup' %}<rect x="4" y="8" width="11" height="12" rx="1.5"/><path d="M9 4h11v11" opacity=".55"/><path d="M9 4h11a1 1 0 0 1 1 1v11" opacity=".55"/>{% elif name == 'warn' %}<path d="M12 3.5 21 19.5H3z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17" r=".4" fill="currentColor"/>{% elif name == 'crit' %}<circle cx="12" cy="12" r="8.5"/><path d="M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"/>{% elif name == 'info' %}<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".5" fill="currentColor"/>{% elif name == 'check' %}<circle cx="12" cy="12" r="8.5"/><path d="M8 12.4l2.6 2.6L16 9.6"/>{% elif name == 'db' %}<ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.66 3.58 3 8 3s8-1.34 8-3v-13"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/>{% elif name == 'chart' %}<path d="M4 20h16"/><rect x="5" y="12" width="3.4" height="8"/><rect x="10.3" y="7.5" width="3.4" height="12.5"/><rect x="15.6" y="4.5" width="3.4" height="15.5"/>{% elif name == 'net' %}<circle cx="6" cy="6" r="2.1"/><circle cx="18" cy="8.5" r="2.1"/><circle cx="12" cy="18" r="2.1"/><path d="M7.8 7.2l8.2 1.1M7.2 7.2l3.6 8.6M16.1 9.6l-3.1 6.3"/>{% elif name == 'slider' %}<path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2.4"/><circle cx="9" cy="16" r="2.4"/>{% elif name == 'table' %}<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 11h16M10 5v14"/>{% elif name == 'time' %}<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>{% elif name == 'chip' %}<rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/><path d="M9.5 6.5v-2M14.5 6.5v-2M9.5 19.5v-2M14.5 19.5v-2M6.5 9.5h-2M6.5 14.5h-2M19.5 9.5h-2M19.5 14.5h-2"/>{% elif name == 'flag' %}<path d="M5.5 21.5v-17"/><path d="M5.5 4.5h11.5l-2.6 3.6 2.6 3.6H5.5"/>{% elif name == 'eye' %}<path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/>{% elif name == 'arrow' %}<path d="M4 12h15M13 6l6 6-6 6"/>{% elif name == 'spark' %}<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="5"/>{% elif name == 'sun' %}<circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.1 5.1l1.7 1.7M17.2 17.2l1.7 1.7M18.9 5.1l-1.7 1.7M6.8 17.2l-1.7 1.7"/>{% else %}<circle cx="12" cy="12" r="8.5"/>{% endif %}</svg>
+{%- endmacro %}
+{% macro badge(level, text) -%}
+<span class="badge badge-{{ level|lower }}">{{ icon(level|lower) }} {{ text }}</span>
+{%- endmacro %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Data Analysis Report{% endblock %}</title>
-  <link rel="stylesheet" href="{{ prefix }}css/report.css">
+  <link rel="icon" type="image/x-icon" href="{{ prefix }}favicon.ico">
+  <script>
+    /* apply persisted theme before first paint to avoid flash */
+    (function () {
+      var t = 'dark';
+      try { t = localStorage.getItem('da-theme') || 'dark'; } catch (e) {}
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ prefix }}css/base.css">
+  <link rel="stylesheet" href="{{ prefix }}css/layout.css">
+  <link rel="stylesheet" href="{{ prefix }}css/components.css">
+  <link rel="stylesheet" href="{{ prefix }}css/charts.css">
+  <link rel="stylesheet" href="{{ prefix }}css/print.css" media="print">
+  <script src="{{ prefix }}js/core.js" defer></script>
+  <script src="{{ prefix }}js/i18n.js" defer></script>
+  <script src="{{ prefix }}js/data.js" defer></script>
+  <script src="{{ prefix }}js/main.js" defer></script>
+  {% block head %}{% endblock %}
 </head>
 <body>
 <header class="topbar">
   <div class="nav-wrap">
-    <a class="brand" href="{{ prefix }}index.html">Data Analysis Report</a>
+    <a class="brand" href="{{ prefix }}index.html"><span class="mark"><span>Σ</span></span><span data-i18n="brand.title">Data Audit</span> <small data-i18n="brand.sub">· initial analysis</small></a>
     <nav>
-      <a href="{{ prefix }}html/overview.html">Overview</a>
-      <a href="{{ prefix }}html/data_quality.html">Quality</a>
-      <a href="{{ prefix }}html/distributions.html">Distributions</a>
-      <a href="{{ prefix }}html/relationships.html">Relationships</a>
-      <a href="{{ prefix }}html/correlations.html">Correlations</a>
+      <a href="{{ prefix }}index.html" data-i18n="nav.summary">Summary</a>
+      <a href="{{ prefix }}html/overview.html" data-i18n="nav.overview">Overview</a>
+      <a href="{{ prefix }}html/data_quality.html" data-i18n="nav.quality">Quality</a>
+      <a href="{{ prefix }}html/distributions.html" data-i18n="nav.distributions">Distributions</a>
+      <a href="{{ prefix }}html/relationships.html" data-i18n="nav.relationships">Relationships</a>
+      <a href="{{ prefix }}html/correlations.html" data-i18n="nav.correlations">Correlations</a>
     </nav>
+    <div class="actions">
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme">☀</button>
+      <button id="lang-toggle" class="icon-btn lang-btn" type="button" aria-label="Toggle language">中文</button>
+    </div>
   </div>
 </header>
 <main class="container">
 {% block content %}{% endblock %}
-<footer>Generated from read-only analysis. No source data was modified.</footer>
+<footer>
+  <span data-i18n="footer.note1">Generated from read-only analysis. Source data was not modified.</span>
+  <span data-i18n="footer.note2">Interactive report · vanilla JS/SVG · no external resources</span>
+</footer>
 </main>
-<script src="{{ prefix }}js/report.js"></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

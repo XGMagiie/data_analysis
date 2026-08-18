@@ -1,9 +1,69 @@
-{% extends "base.html" %}{% block title %}Overview{% endblock %}{% block content %}
-<h1>Dataset Overview</h1>
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
 {% set ds = analysis.profile.dataset %}
+<h1 data-i18n="overview.title">Dataset Overview</h1>
+<p class="muted panel-note" data-i18n="overview.note">Schema, semantic types, and per-column inference from a read-only pass.</p>
+
 <section class="metric-grid">
-<div class="metric"><span>Rows</span><strong>{{ "{:,}".format(ds.rows) }}</strong></div><div class="metric"><span>Columns</span><strong>{{ ds.columns }}</strong></div><div class="metric"><span>Memory</span><strong>{{ "{:.2f}".format(ds.memory_bytes/1048576) }} MB</strong></div><div class="metric"><span>Empty columns</span><strong>{{ ds.fully_empty_columns }}</strong></div>
+  <div class="metric reveal"><span class="m-label">{{ icon('rows') }} <span data-i18n="metric.rows">Rows</span></span><strong>{{ "{:,}".format(ds.rows) }}</strong></div>
+  <div class="metric reveal" style="animation-delay:60ms"><span class="m-label">{{ icon('cols') }} <span data-i18n="metric.columns">Columns</span></span><strong>{{ ds.columns }}</strong></div>
+  <div class="metric reveal tone-blue" style="animation-delay:120ms"><span class="m-label">{{ icon('chip') }} <span data-i18n="metric.memory">Memory</span></span><strong>{{ "{:.2f}".format(ds.memory_bytes/1048576) }} MB</strong></div>
+  <div class="metric reveal {% if ds.fully_empty_columns %}tone-red{% endif %}" style="animation-delay:180ms"><span class="m-label">{{ icon('missing') }} <span data-i18n="metric.emptyCols">Empty columns</span></span><strong>{{ ds.fully_empty_columns }}</strong></div>
 </section>
-<section class="panel"><h2>Semantic types</h2><div class="chip-row">{% for k,v in ds.type_counts.items() %}<span class="chip">{{ k }} · {{ v }}</span>{% endfor %}</div></section>
-<section class="panel"><h2>Columns</h2><div class="table-wrap"><table><thead><tr><th>Column</th><th>Type</th><th>Confidence</th><th>Flags</th></tr></thead><tbody>{% for c in analysis.profile.columns %}<tr><td>{{ c.name }}</td><td>{{ c.semantic_type }}</td><td>{{ c.type_confidence | num }}</td><td>{% if c.flags %}{{ c.flags|join(', ') }}{% else %}—{% endif %}</td></tr>{% endfor %}</tbody></table></div></section>
+
+<section class="panel reveal">
+  <h2>{{ icon('spark') }} <span data-i18n="overview.types">Semantic types</span></h2>
+  <div class="chip-row" id="semantic-type-counts">
+    {% for k, v in ds.type_counts.items() %}<span class="chip">{{ k }} <b data-type-count="{{ k }}">{{ v }}</b></span>{% endfor %}
+  </div>
+</section>
+
+<section class="panel reveal">
+  <h2>{{ icon('table') }} <span data-i18n="overview.columns">Columns</span></h2>
+  <div class="panel-note" data-i18n="overview.overrideNote">Change a feature's type here — the override applies to Distributions, Relationships, and Correlations.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th data-i18n="th.column">Column</th>
+        <th data-i18n="th.type">Type</th>
+        <th data-i18n="th.confidence">Confidence</th>
+        <th data-i18n="th.reason">Reason</th>
+        <th data-i18n="overview.treatAs">Treat as</th>
+        <th data-i18n="th.flags">Flags</th>
+      </tr></thead>
+      <tbody>
+      {% for c in analysis.profile.columns %}
+        <tr data-col="{{ c.name }}" data-base="{{ c.semantic_type }}">
+          <td>{{ c.name }}</td>
+          <td><span class="eff-type">{{ c.semantic_type }}</span></td>
+          <td>{{ c.type_confidence | num }}</td>
+          <td>{{ c.type_reason or '—' }}</td>
+          <td><div class="select-wrap type-ovr"><select class="type-override" data-col="{{ c.name }}" data-base="{{ c.semantic_type }}" aria-label="Type override for {{ c.name }}"></select></div></td>
+          <td>{% if c.flags %}{% for f in c.flags %}<span class="badge badge-{{ f.severity }}" data-flag="{{ f.flag }}">{{ f.flag }}</span> {% endfor %}{% else %}—{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if commentary.dataset %}
+<section class="panel reveal">
+  <h2>{{ icon('eye') }} <span data-i18n="overview.ai">AI commentary</span></h2>
+  <div class="finding-list">
+    {% for item in commentary.dataset %}<div class="finding">{{ badge(item.level, item.level) }}<p>{{ item.text }}</p></div>{% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script src="../js/pages/overview.js" defer></script>
+<script>
+  function translateFlags() {
+    document.querySelectorAll('[data-flag]').forEach((el) => { el.textContent = DA.flag(el.dataset.flag); });
+  }
+  document.addEventListener('da-lang-change', translateFlags);
+  document.addEventListener('DOMContentLoaded', translateFlags);
+</script>
 {% endblock %}

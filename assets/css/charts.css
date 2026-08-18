@@ -1,0 +1,77 @@
+/* charts.css — interactive SVG chart containers, axes, legends, tooltips */
+.chart-figure {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px 14px;
+  box-shadow: var(--shadow);
+  animation: chartIn 0.35s ease both;
+}
+@keyframes chartIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.chart-figure .chart-title { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; margin: 0 0 2px; overflow-wrap: anywhere; }
+.chart-figure .chart-caption { color: var(--faint); font-size: 11px; margin: 0 0 10px; }
+.chart-figure .chart-body { width: 100%; }
+
+svg.da-chart { display: block; width: 100%; height: auto; }
+.da-chart text { font-family: var(--mono); fill: var(--muted); }
+.da-chart .axis-tick { stroke: var(--line-bright); }
+.da-chart .axis-label { fill: var(--muted); font-size: 11px; }
+.da-chart .axis-title { fill: var(--faint); font-size: 10.5px; letter-spacing: 0.06em; }
+.da-chart .grid-line { stroke: var(--line); stroke-dasharray: 2 4; opacity: 0.5; }
+
+.da-tooltip {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  background: #0b0f17;
+  border: 1px solid var(--line-bright);
+  border-radius: 5px;
+  padding: 8px 11px;
+  font-size: 12px;
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  max-width: 320px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.da-tooltip.show { opacity: 1; }
+.da-tooltip .tt-title { color: var(--accent); font-weight: 700; margin-bottom: 3px; }
+.da-tooltip .tt-line { color: var(--muted); }
+.da-tooltip b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* network */
+.da-network .net-edge { transition: opacity 0.25s ease; }
+.da-network .net-node { cursor: pointer; transition: opacity 0.25s ease; }
+.da-network .net-node circle { transition: r 0.2s ease; }
+.da-network .net-node:hover circle { stroke: var(--accent); stroke-width: 2.5; }
+.da-network .net-node text { pointer-events: none; }
+.da-network.dim .net-node:not(.focus) { opacity: 0.18; }
+.da-network.dim .net-edge:not(.focus) { opacity: 0.05 !important; }
+
+/* histogram bars + boxes */
+.da-chart .bar { transition: opacity 0.15s ease; }
+.da-chart .bar:hover { opacity: 0.75; }
+.da-chart .box { fill: var(--surface-3); stroke: var(--teal); stroke-width: 1.4; }
+.da-chart .box-median { stroke: var(--accent); stroke-width: 2; }
+.da-chart .box-whisker { stroke: var(--teal); stroke-width: 1.2; }
+.da-chart .box-outlier { fill: var(--red); }
+.da-chart .scatter-pt { transition: opacity 0.15s ease; }
+.da-chart .scatter-pt:hover { opacity: 1; }
+
+/* heatmap */
+.da-chart .hm-cell { stroke: var(--bg); stroke-width: 1.2; }
+.da-chart .hm-cell:hover { stroke: var(--accent); stroke-width: 2; }
+.da-chart .hm-label { font-size: 10px; }
+
+/* legend */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; }
+.legend .lg-item { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
+.legend .lg-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.legend .lg-bar { width: 90px; height: 8px; border-radius: 2px; }
+
+@media (max-width: 640px) {
+  .chart-figure { padding: 12px; }
+}

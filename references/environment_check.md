@@ -5,10 +5,10 @@ Verify that the runtime can execute the analysis safely before reading user data
 
 ## Required checks
 - Python >= 3.10.
-- Importability of `pandas`, `numpy`, `openpyxl`, `matplotlib`, `jinja2`, `networkx`, `charset_normalizer`, and `packaging`.
+- Importability of `pandas`, `numpy`, `openpyxl`, `jinja2`, `charset_normalizer`, and `packaging`.
 - `xlrd` is optional and only required for `.xls`.
 - The requested output location is writable.
-- Matplotlib can render using a non-interactive backend (`Agg`).
+- matplotlib and networkx are **optional** in V2 — charts are rendered client-side with vanilla JS/SVG. They are probed only for information.
 
 ## Installation policy
 Never install packages automatically. If a required package is missing:
