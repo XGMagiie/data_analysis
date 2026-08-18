@@ -1,0 +1,30 @@
+{% set is_root = page_path == 'index.html' %}
+{% set prefix = '' if is_root else '../' %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Data Analysis Report{% endblock %}</title>
+  <link rel="stylesheet" href="{{ prefix }}css/report.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="nav-wrap">
+    <a class="brand" href="{{ prefix }}index.html">Data Analysis Report</a>
+    <nav>
+      <a href="{{ prefix }}html/overview.html">Overview</a>
+      <a href="{{ prefix }}html/data_quality.html">Quality</a>
+      <a href="{{ prefix }}html/distributions.html">Distributions</a>
+      <a href="{{ prefix }}html/relationships.html">Relationships</a>
+      <a href="{{ prefix }}html/correlations.html">Correlations</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+{% block content %}{% endblock %}
+<footer>Generated from read-only analysis. No source data was modified.</footer>
+</main>
+<script src="{{ prefix }}js/report.js"></script>
+</body>
+</html>
