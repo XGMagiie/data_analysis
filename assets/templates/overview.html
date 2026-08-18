@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Overview{% endblock %}{% block content %}
+<h1>Dataset Overview</h1>
+{% set ds = analysis.profile.dataset %}
+<section class="metric-grid">
+<div class="metric"><span>Rows</span><strong>{{ "{:,}".format(ds.rows) }}</strong></div><div class="metric"><span>Columns</span><strong>{{ ds.columns }}</strong></div><div class="metric"><span>Memory</span><strong>{{ "{:.2f}".format(ds.memory_bytes/1048576) }} MB</strong></div><div class="metric"><span>Empty columns</span><strong>{{ ds.fully_empty_columns }}</strong></div>
+</section>
+<section class="panel"><h2>Semantic types</h2><div class="chip-row">{% for k,v in ds.type_counts.items() %}<span class="chip">{{ k }} · {{ v }}</span>{% endfor %}</div></section>
+<section class="panel"><h2>Columns</h2><div class="table-wrap"><table><thead><tr><th>Column</th><th>Type</th><th>Confidence</th><th>Flags</th></tr></thead><tbody>{% for c in analysis.profile.columns %}<tr><td>{{ c.name }}</td><td>{{ c.semantic_type }}</td><td>{{ c.type_confidence | num }}</td><td>{% if c.flags %}{{ c.flags|join(', ') }}{% else %}—{% endif %}</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

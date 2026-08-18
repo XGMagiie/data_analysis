@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Relationships{% endblock %}{% block content %}
+<h1>Pairwise Relationships</h1><p class="muted">Only pairs explicitly requested for this run are shown.</p>
+<section class="panel">{% if analysis.visualizations.relationships %}<div class="chart-grid">{% for chart in analysis.visualizations.relationships %}{% if chart.path %}<figure><img loading="lazy" src="../{{ chart.path }}" alt="{{ chart.kind }}"><figcaption><strong>{{ chart.kind }}</strong> · {{ chart.columns|join(' × ') }}{% if chart.sampled %}<br>Sampled {{ chart.plotted_count }} of {{ chart.original_count }} records.{% endif %}</figcaption></figure>{% else %}<div class="empty"><strong>{{ chart.columns|join(' × ') }}</strong>: {{ chart.reason }}</div>{% endif %}{% endfor %}</div>{% else %}<p class="empty">No pairwise charts were requested. Re-run analysis with one or more <code>--pair</code> options.</p>{% endif %}</section>
+{% endblock %}

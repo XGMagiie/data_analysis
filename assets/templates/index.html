@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Analysis Summary{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">INITIAL DATA AUDIT</p>
+  <h1>{{ analysis.source.file | e }}</h1>
+  <p class="muted">{% if analysis.source.sheet %}Sheet: {{ analysis.source.sheet | e }} · {% endif %}Header mode: {{ analysis.source.header_mode | e }}</p>
+</section>
+{% set ds = analysis.profile.dataset %}
+<section class="metric-grid">
+  <div class="metric"><span>Rows</span><strong>{{ "{:,}".format(ds.rows) }}</strong></div>
+  <div class="metric"><span>Columns</span><strong>{{ ds.columns }}</strong></div>
+  <div class="metric"><span>Missing</span><strong>{{ ds.missing_rate | pct }}</strong></div>
+  <div class="metric"><span>Duplicate rows</span><strong>{{ ds.duplicate_rate | pct }}</strong></div>
+</section>
+<section class="panel">
+  <h2>Key findings</h2>
+  <div class="finding-list">
+  {% for item in commentary.summary %}
+    <div class="finding"><span class="badge badge-{{ item.level|lower }}">{{ item.level }}</span><p>{{ item.text }}</p></div>
+  {% endfor %}
+  </div>
+</section>
+{% if analysis.warnings %}
+<section class="panel warning"><h2>Analysis notes</h2><ul>{% for w in analysis.warnings %}<li>{{ w.message }}</li>{% endfor %}</ul></section>
+{% endif %}
+<section class="panel">
+  <h2>Explore the report</h2>
+  <div class="link-grid">
+    <a href="html/overview.html"><strong>Overview</strong><span>Schema and dataset composition</span></a>
+    <a href="html/data_quality.html"><strong>Data quality</strong><span>Missingness, duplicates, flags</span></a>
+    <a href="html/distributions.html"><strong>Distributions</strong><span>Univariate summaries and charts</span></a>
+    <a href="html/relationships.html"><strong>Relationships</strong><span>User-selected pairwise views</span></a>
+    <a href="html/correlations.html"><strong>Correlations</strong><span>Pearson, Spearman, network views</span></a>
+  </div>
+</section>
+<section class="panel"><h2>Limitations</h2><ul>{% for x in commentary.limitations %}<li>{{ x }}</li>{% endfor %}</ul></section>
+{% endblock %}
