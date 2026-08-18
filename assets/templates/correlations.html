@@ -1,8 +1,53 @@
-{% extends "base.html" %}{% block title %}Correlations{% endblock %}{% block content %}
-<h1>Correlation Analysis</h1><p class="muted">Correlation describes association, not causation. Constant or insufficient numeric fields are excluded.</p>
+{% extends "base.html" %}
+{% block title %}Correlations{% endblock %}
+{% block content %}
+<h1 data-i18n="corr.title">Correlation Analysis</h1>
+<p class="muted panel-note" data-i18n="corr.note">Correlation describes association, not causation. Drag the threshold slider to filter network edges by |r| in real time.</p>
+
 {% if analysis.correlations.usable_numeric_features %}
-<section class="panel"><h2>Features used</h2><p>{{ analysis.correlations.matrix_features|join(', ') }}</p>{% if analysis.correlations.truncated %}<div class="alert">The full usable numeric feature set exceeded the configured display limit; the matrix was bounded.</div>{% endif %}</section>
-<div class="chart-grid">{% for method, info in analysis.correlations.methods.items() %}<section class="panel"><h2>{{ method|title }}</h2>{% if info.heatmap_path %}<figure><img src="../{{ info.heatmap_path }}" alt="{{ method }} heatmap"><figcaption>Correlation matrix</figcaption></figure>{% endif %}{% if info.network.path %}<figure><img src="../{{ info.network.path }}" alt="{{ method }} network"><figcaption>{{ info.network.edge_count }} network edges above threshold.</figcaption></figure>{% else %}<p class="empty">No network edges met the configured threshold.</p>{% endif %}</section>{% endfor %}</div>
-<section class="panel"><h2>Reproducible random subset</h2><p>Seed {{ analysis.correlations.random_subset.seed }} · {{ analysis.correlations.random_subset.features|join(', ') }}</p>{% if analysis.correlations.random_subset.heatmap_path %}<figure><img src="../{{ analysis.correlations.random_subset.heatmap_path }}" alt="Random correlation subset"><figcaption>{{ analysis.correlations.random_subset.method|title }} correlation of the selected features.</figcaption></figure>{% endif %}</section>
-{% else %}<section class="panel"><p class="empty">No usable numeric features were available for correlation analysis.</p></section>{% endif %}
+<section class="panel reveal">
+  <h2>{{ icon('slider') }} <span data-i18n="corr.select">Numeric features to include</span></h2>
+  <div class="panel-note" id="corr-count"></div>
+  <div class="feat-picker" id="corr-picker"></div>
+  {% if analysis.correlations.truncated %}<div class="alert" style="margin-top:14px">{{ icon('warn') }} <span data-i18n="corr.bounded">The full usable numeric feature set exceeded the configured display limit; the matrix was bounded.</span></div>{% endif %}
+</section>
+
+<section class="panel reveal">
+  <h2>{{ icon('net') }} <span data-i18n="corr.network">Correlation network</span></h2>
+  <div class="panel-note" data-i18n="corr.network.note">Nodes are numeric features; an edge exists when |correlation| ≥ threshold. Edge color: teal = positive, red = negative. Hover a node to highlight its connections.</div>
+  <div class="tabs" id="corr-tabs">
+    <button class="active" data-method="pearson">Pearson</button>
+    <button data-method="spearman">Spearman</button>
+  </div>
+  <div class="slider-row">
+    <span class="m-label">{{ icon('slider') }} <span data-i18n="corr.threshold">Threshold |r| ≥</span></span>
+    <input type="range" id="threshold-slider" min="0" max="0.99" step="0.01" value="0.7" aria-label="Correlation threshold">
+    <span class="slider-val" id="threshold-value">0.70</span>
+  </div>
+  <div class="panel-note" id="net-count" style="margin-top:10px"></div>
+  <div id="corr-network" class="chart-body"></div>
+</section>
+
+<section class="panel reveal">
+  <h2>{{ icon('table') }} <span data-i18n="corr.heatmap">Correlation matrix</span></h2>
+  <div class="panel-note" data-i18n="corr.heatmap.note">Cell color encodes sign and magnitude (teal = +1, red = −1). Hover a cell for the exact coefficient.</div>
+  <div id="corr-heatmap" class="chart-body"></div>
+</section>
+
+{% set rs = analysis.correlations.random_subset %}
+{% if rs.features %}
+<section class="panel reveal">
+  <h2>{{ icon('spark') }} <span data-i18n="corr.random">Reproducible random subset</span></h2>
+  <div class="panel-note">Seed {{ rs.seed }} · {{ rs.features | join(', ') }} · {{ rs.method | title }}</div>
+  <div id="corr-random" class="chart-body"></div>
+</section>
+{% endif %}
+{% else %}
+<section class="panel reveal"><div class="empty" data-i18n="corr.noNumeric">No usable numeric features were available for correlation analysis.</div></section>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script src="../js/charts/heatmap.js" defer></script>
+<script src="../js/charts/network.js" defer></script>
+<script src="../js/pages/correlations.js" defer></script>
 {% endblock %}

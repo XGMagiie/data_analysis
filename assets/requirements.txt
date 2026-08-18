@@ -1,8 +1,11 @@
 pandas>=2.0
 numpy>=1.24
 openpyxl>=3.1
-matplotlib>=3.7
 jinja2>=3.1
-networkx>=3.0
-charset-normalizer>=3.0
+charset_normalizer>=3.0
 packaging>=23.0
+
+# Optional (not required for V2; charts are rendered client-side):
+# matplotlib>=3.7   # previously used for static charts
+# networkx>=3.0     # previously used for static network layouts
+# xlrd>=2.0         # required only to read legacy .xls files

@@ -14,7 +14,7 @@
   "high_missing_rate": 0.4,
   "near_constant_ratio": 0.995,
   "max_auto_visualized_features": 20,
-  "correlation_max_features": 40,
+  "correlation_max_features": 100,
   "random_feature_count": 10,
   "random_seed": 42,
   "correlation_threshold": 0.7,
@@ -23,5 +23,9 @@
   "id_unique_ratio": 0.9,
   "max_html_table_rows": 200,
   "large_file_bytes": 134217728,
-  "max_auto_load_bytes": 536870912
+  "max_auto_load_bytes": 536870912,
+  "high_missing_critical_rate": 0.8,
+  "correlation_default_features": 10,
+  "correlation_max_selectable": 20,
+  "full_counts_max_cardinality": 50
 }

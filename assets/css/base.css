@@ -1,0 +1,117 @@
+/* base.css — design tokens, reset, typography, atmosphere */
+:root {
+  --bg: #0a0d13;
+  --bg-soft: #0d1119;
+  --surface: #11161f;
+  --surface-2: #161d2a;
+  --surface-3: #1c2434;
+  --line: #222b3b;
+  --line-bright: #2f3b52;
+  --text: #e8edf5;
+  --muted: #8d99ad;
+  --faint: #5c6a80;
+  --accent: #ffc233;
+  --teal: #2ee6a8;
+  --blue: #58a6ff;
+  --red: #ff5d5d;
+  --violet: #b388ff;
+  --pink: #ff7ab2;
+  --amber-soft: rgba(255, 194, 51, 0.12);
+  --teal-soft: rgba(46, 230, 168, 0.12);
+  --red-soft: rgba(255, 93, 93, 0.12);
+  --blue-soft: rgba(88, 166, 255, 0.12);
+  --mono: "JetBrains Mono", "SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
+  --radius: 6px;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+  --grid-line: rgba(140, 165, 200, 0.045);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(88, 166, 255, 0.07), transparent 60%),
+    radial-gradient(900px 460px at -10% 110%, rgba(46, 230, 168, 0.05), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* graph-paper grid atmosphere */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  z-index: 0;
+}
+
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 0.55em; font-weight: 700; }
+h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(26px, 3.4vw, 40px); letter-spacing: -0.01em; }
+h2 { font-size: 17px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text); }
+h3 { font-size: 14px; }
+a { color: var(--teal); text-decoration: none; }
+a:hover { color: var(--accent); }
+code { font-family: var(--mono); background: var(--surface-3); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
+::selection { background: rgba(255, 194, 51, 0.3); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ————— light theme ————— */
+html[data-theme="light"] {
+  --bg: #eef1f6;
+  --bg-soft: #e7ebf2;
+  --surface: #ffffff;
+  --surface-2: #f4f6fa;
+  --surface-3: #e9edf4;
+  --line: #d8dfea;
+  --line-bright: #bcc8da;
+  --text: #182136;
+  --muted: #52607a;
+  --faint: #8491a8;
+  --accent: #b45309;
+  --teal: #0e9f76;
+  --blue: #1d6fd6;
+  --red: #d92d20;
+  --violet: #7c3aed;
+  --pink: #db2777;
+  --amber-soft: rgba(180, 83, 9, 0.1);
+  --teal-soft: rgba(14, 159, 118, 0.1);
+  --red-soft: rgba(217, 45, 32, 0.1);
+  --blue-soft: rgba(29, 111, 214, 0.1);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 6px 18px rgba(30, 45, 75, 0.08);
+  --grid-line: rgba(30, 50, 90, 0.05);
+}
+html[data-theme="light"] body::before {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+}
+html[data-theme="light"] .topbar {
+  background: rgba(255, 255, 255, 0.92);
+}
+html[data-theme="light"] .metric, html[data-theme="light"] .panel,
+html[data-theme="light"] .chart-figure {
+  background: var(--surface);
+}
+html[data-theme="light"] .da-tooltip {
+  background: #ffffff;
+  border-color: var(--line-bright);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(30, 45, 75, 0.18);
+}
+html[data-theme="light"] .da-chart .box { fill: var(--surface-3); }
+html[data-theme="light"] .da-chart .hm-label { fill: var(--muted); }
+html[data-theme="light"] input[type="range"]::-webkit-slider-thumb { background: #fff; }
+html[data-theme="light"] input[type="range"]::-moz-range-thumb { background: #fff; }
